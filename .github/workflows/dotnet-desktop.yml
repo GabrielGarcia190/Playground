@@ -56,10 +56,9 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: your-solution-name                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      Solution_Name: exemplos-Clean-Code.sln                        # Replace with your solution name, i.e. MyWpfApp.sln.
+      Wap_Project_Path: exemplos-Clean-Code\exemplos-Clean-Code\exemplos-Clean-Code.csproj  # Replace with the path to your Windows Application Packaging project, i.e. MyWpfApp\MyWpfApp.csproj.
+      Wap_Project_Directory: exemplos-Clean-Code\exemplos-Clean-Code\bin\${{ matrix.configuration }}\Appx  # Replace with the path to the directory where the MSIX package will be created.
 
     steps:
     - name: Checkout
