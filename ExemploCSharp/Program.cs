@@ -1,113 +1,138 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data.SQLite;
 
-namespace BibliotecaBaguncada
+namespace ExemploCSharp
 {
     class Program
     {
-        static List<Dictionary<string, object>> livros = new List<Dictionary<string, object>>();
-        static List<Dictionary<string, object>> usuarios = new List<Dictionary<string, object>>();
-        static List<Dictionary<string, object>> emprestimos = new List<Dictionary<string, object>>();
-
         static void Main(string[] args)
         {
+            var dbPath = "biblioteca.db";
+            var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;");
+            connection.Open();
+
+            // Criação de tabelas
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS Livros (
+                    ISBN TEXT PRIMARY KEY,
+                    Titulo TEXT,
+                    Autor TEXT,
+                    Disponivel INTEGER
+                );
+                CREATE TABLE IF NOT EXISTS Usuarios (
+                    CPF TEXT PRIMARY KEY,
+                    Nome TEXT,
+                    Bloqueado INTEGER
+                );
+                CREATE TABLE IF NOT EXISTS Emprestimos (
+                    CPF TEXT,
+                    ISBN TEXT,
+                    DataEmprestimo TEXT,
+                    DataDevolucao TEXT
+                )";
+            cmd.ExecuteNonQuery();
+
             while (true)
             {
-                Console.WriteLine("1 - Adicionar Livro");
-                Console.WriteLine("2 - Listar Livros");
-                Console.WriteLine("3 - Registrar Usuário");
-                Console.WriteLine("4 - Emprestar Livro");
-                Console.WriteLine("5 - Devolver Livro");
-                Console.WriteLine("6 - Sair");
-                string opcao = Console.ReadLine();
+                Console.WriteLine("\n1 - Adicionar Livro\n2 - Listar Livros\n3 - Registrar Usuário\n4 - Emprestar Livro\n5 - Devolver Livro\n6 - Sair");
+                var opcao = Console.ReadLine();
 
                 if (opcao == "1")
                 {
-                    Console.WriteLine("Digite o título do livro:");
-                    string titulo = Console.ReadLine();
-                    Console.WriteLine("Digite o autor:");
-                    string autor = Console.ReadLine();
-                    Console.WriteLine("Digite o ISBN:");
-                    string isbn = Console.ReadLine();
-                    livros.Add(new Dictionary<string, object> { { "Titulo", titulo }, { "Autor", autor }, { "ISBN", isbn }, { "Disponivel", true } });
+                    Console.WriteLine("Título:");
+                    var titulo = Console.ReadLine();
+                    Console.WriteLine("Autor:");
+                    var autor = Console.ReadLine();
+                    Console.WriteLine("ISBN:");
+                    var isbn = Console.ReadLine();
+                    var insertCmd = connection.CreateCommand();
+                    insertCmd.CommandText = $"INSERT INTO Livros VALUES ('{isbn}', '{titulo}', '{autor}', 1)";
+                    insertCmd.ExecuteNonQuery();
                 }
                 else if (opcao == "2")
                 {
-                    foreach (var livro in livros)
+                    var selectCmd = connection.CreateCommand();
+                    selectCmd.CommandText = "SELECT * FROM Livros";
+                    var reader = selectCmd.ExecuteReader();
+                    while (reader.Read())
                     {
-                        Console.WriteLine($"Título: {livro["Titulo"]}, Disponível: {livro["Disponivel"]}");
+                        Console.WriteLine($"Livro: {reader["Titulo"]}, Disponível: {(Convert.ToInt32(reader["Disponivel"]) == 1 ? "Sim" : "Não")}");
                     }
                 }
                 else if (opcao == "3")
                 {
-                    Console.WriteLine("Digite o nome do usuário:");
-                    string nome = Console.ReadLine();
-                    Console.WriteLine("Digite o CPF:");
-                    string cpf = Console.ReadLine();
-                    usuarios.Add(new Dictionary<string, object> { { "Nome", nome }, { "CPF", cpf }, { "Bloqueado", false } });
+                    Console.WriteLine("Nome:");
+                    var nome = Console.ReadLine();
+                    Console.WriteLine("CPF:");
+                    var cpf = Console.ReadLine();
+                    var insertCmd = connection.CreateCommand();
+                    insertCmd.CommandText = $"INSERT INTO Usuarios VALUES ('{cpf}', '{nome}', 0)";
+                    insertCmd.ExecuteNonQuery();
                 }
                 else if (opcao == "4")
                 {
-                    Console.WriteLine("Digite o CPF do usuário:");
-                    string cpf = Console.ReadLine();
-                    Console.WriteLine("Digite o ISBN do livro:");
-                    string isbn = Console.ReadLine();
+                    Console.WriteLine("CPF do usuário:");
+                    var cpf = Console.ReadLine();
+                    Console.WriteLine("ISBN do livro:");
+                    var isbn = Console.ReadLine();
 
-                    var usuario = usuarios.Find(u => (string)u["CPF"] == cpf);
-                    var livro = livros.Find(l => (string)l["ISBN"] == isbn);
+                    var checkUserCmd = connection.CreateCommand();
+                    checkUserCmd.CommandText = $"SELECT Bloqueado FROM Usuarios WHERE CPF = '{cpf}'";
+                    var user = checkUserCmd.ExecuteScalar();
 
-                    if (usuario == null || livro == null)
+                    var checkBookCmd = connection.CreateCommand();
+                    checkBookCmd.CommandText = $"SELECT Disponivel FROM Livros WHERE ISBN = '{isbn}'";
+                    var book = checkBookCmd.ExecuteScalar();
+
+                    if (user == null || book == null || Convert.ToInt32(book) == 0)
                     {
-                        Console.WriteLine("Usuário ou livro não encontrado!");
+                        Console.WriteLine("Não foi possível emprestar!");
                         continue;
                     }
 
-                    if ((bool)livro["Disponivel"] && !(bool)usuario["Bloqueado"])
-                    {
-                        livro["Disponivel"] = false;
-                        emprestimos.Add(new Dictionary<string, object>
-                        {
-                            { "CPF", cpf },
-                            { "ISBN", isbn },
-                            { "DataEmprestimo", DateTime.Now },
-                            { "DataDevolucao", DateTime.Now.AddDays(14) }
-                        });
-                        Console.WriteLine("Livro emprestado!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Livro indisponível ou usuário bloqueado!");
-                    }
+                    var updateCmd = connection.CreateCommand();
+                    updateCmd.CommandText = $"UPDATE Livros SET Disponivel = 0 WHERE ISBN = '{isbn}'";
+                    updateCmd.ExecuteNonQuery();
+
+                    var insertEmprestimoCmd = connection.CreateCommand();
+                    insertEmprestimoCmd.CommandText = $"INSERT INTO Emprestimos VALUES ('{cpf}', '{isbn}', datetime('now'), datetime('now', '+14 days'))";
+                    insertEmprestimoCmd.ExecuteNonQuery();
                 }
                 else if (opcao == "5")
                 {
-                    Console.WriteLine("Digite o ISBN do livro:");
-                    string isbn = Console.ReadLine();
-                    var emprestimo = emprestimos.Find(e => (string)e["ISBN"] == isbn);
-                    var livro = livros.Find(l => (string)l["ISBN"] == isbn);
+                    Console.WriteLine("ISBN do livro:");
+                    var isbn = Console.ReadLine();
 
-                    if (emprestimo == null || livro == null)
+                    var getEmprestimoCmd = connection.CreateCommand();
+                    getEmprestimoCmd.CommandText = $"SELECT DataDevolucao FROM Emprestimos WHERE ISBN = '{isbn}'";
+                    var data = getEmprestimoCmd.ExecuteScalar();
+
+                    if (data != null)
                     {
-                        Console.WriteLine("Empréstimo não encontrado!");
-                        continue;
+                        var devolucao = DateTime.Parse(data.ToString());
+                        if (DateTime.Now > devolucao)
+                        {
+                            var dias = (DateTime.Now - devolucao).Days;
+                            Console.WriteLine($"Multa de R${dias * 2.5m}!");
+                        }
                     }
 
-                    livro["Disponivel"] = true;
-                    DateTime dataDevolucao = (DateTime)emprestimo["DataDevolucao"];
-                    if (DateTime.Now > dataDevolucao)
-                    {
-                        int diasAtraso = (DateTime.Now - dataDevolucao).Days;
-                        decimal multa = diasAtraso * 2.50m;
-                        Console.WriteLine($"Multa de R${multa} por {diasAtraso} dias de atraso!");
-                    }
-                    emprestimos.Remove(emprestimo);
-                    Console.WriteLine("Livro devolvido!");
+                    var updateCmd = connection.CreateCommand();
+                    updateCmd.CommandText = $"UPDATE Livros SET Disponivel = 1 WHERE ISBN = '{isbn}'";
+                    updateCmd.ExecuteNonQuery();
+
+                    var deleteCmd = connection.CreateCommand();
+                    deleteCmd.CommandText = $"DELETE FROM Emprestimos WHERE ISBN = '{isbn}'";
+                    deleteCmd.ExecuteNonQuery();
                 }
                 else if (opcao == "6")
                 {
                     break;
                 }
             }
+
+            connection.Close();
         }
     }
 }
