@@ -57,8 +57,8 @@ jobs:
 
     env:
       Solution_Name: exemplos-Clean-Code.sln                        # Replace with your solution name, i.e. MyWpfApp.sln.
-      Wap_Project_Path: exemplos-Clean-Code\exemplos-Clean-Code\exemplos-Clean-Code.csproj  # Replace with the path to your Windows Application Packaging project, i.e. MyWpfApp\MyWpfApp.csproj.
-      Wap_Project_Directory: exemplos-Clean-Code\exemplos-Clean-Code\bin\${{ matrix.configuration }}\Appx  # Replace with the path to the directory where the MSIX package will be created.
+      Wap_Project_Path: exemplos-Clean-Code\ExemploCSharp\exemplos-Clean-Code.csproj  # Replace with the path to your Windows Application Packaging project, i.e. MyWpfApp\MyWpfApp.csproj.
+      Wap_Project_Directory: exemplos-Clean-Code\ExemploCSharp\bin\${{ matrix.configuration }}\Appx  # Replace with the path to the directory where the MSIX package will be created.
 
     steps:
     - name: Checkout
