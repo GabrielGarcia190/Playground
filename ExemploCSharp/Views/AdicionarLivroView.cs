@@ -22,8 +22,6 @@ public class AdicionarLivroView : IEscolhaUsuario
         var titulo = Utils.Console.ReadLine();
         Console.WriteLine("Autor:");
         var autor = Utils.Console.ReadLine();
-        Console.WriteLine("ISBN:");
-        var isbn = Utils.Console.ReadLine();
 
         return new Livro(titulo, autor);
     }

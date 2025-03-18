@@ -17,14 +17,24 @@ public class LivroRepository : ILivroRepository
         _context.SaveChanges();
     }
 
-    public void DevolverLivro(string isbn)
+    public void DevolverLivro(int isbn)
     {
-        throw new NotImplementedException();
+        var livro = _context.Livros.FirstOrDefault(l => l.ISBN == isbn);
+
+        if (livro is null) return;
+
+        livro.Disponivel = true;
+        _context.SaveChanges();
     }
 
-    public void EmprestarLivro(string isbn)
+    public void EmprestarLivro(int isbn)
     {
-        throw new NotImplementedException();
+        var livro = _context.Livros.FirstOrDefault(l => l.ISBN == isbn);
+
+        if (livro is null) return;
+
+        livro.Disponivel = false;
+        _context.SaveChanges();
     }
 
     public IEnumerable<Livro> ListarLivros()

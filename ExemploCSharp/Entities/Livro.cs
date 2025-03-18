@@ -8,15 +8,10 @@ public class Livro
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int ISBN { get; private set; }
-
-    [Required(ErrorMessage = "O título é obrigatório.")]
+    public int ISBN { get; set; }
     public string Titulo { get; private set; }
-
-    [Required(ErrorMessage = "O autor é obrigatório.")]
     public string Autor { get; private set; }
-    
-    public bool Disponivel { get; private set; } = true;
+    public bool Disponivel { get; set; } = true;
 
     public Livro(string titulo, string autor)
     {

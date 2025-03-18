@@ -2,6 +2,7 @@
 using ExemploCSharp.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExemploCSharp.Migrations
 {
     [DbContext(typeof(ExemploDBContext))]
-    partial class ExemploDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250318152640_Table_Users")]
+    partial class Table_Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
@@ -36,21 +39,6 @@ namespace ExemploCSharp.Migrations
                     b.HasKey("ISBN");
 
                     b.ToTable("Livros");
-                });
-
-            modelBuilder.Entity("ExemploCSharp.Entities.Usuario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Usuarios");
                 });
 #pragma warning restore 612, 618
         }

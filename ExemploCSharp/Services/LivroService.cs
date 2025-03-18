@@ -1,5 +1,4 @@
 
-using System.Data;
 using ExemploCSharp.Entities;
 using ExemploCSharp.Interfaces;
 
@@ -16,4 +15,10 @@ public class LivroService
 
     public IEnumerable<Livro> ListarLivros()
         => _repository.ListarLivros();
+
+    public void EmprestarLivro(int isbn)
+        => _repository.EmprestarLivro(isbn);
+    
+    public void DevolverLivro(int isbn)
+        => _repository.DevolverLivro(isbn);
 }

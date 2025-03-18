@@ -13,14 +13,16 @@ namespace ExemploCSharp.Factories
                     return new AdicionarLivroView();
                 case "2":
                     return new ListarLivrosView();
-                // case "3":
-                //     return new RegistrarUsuario();
-                // case "4":
-                //     return new EmprestarLivro();
-                // case "5":
-                //     return new DevolverLivro();
-                // case "6":
-                //     return new Sair();
+                case "3":
+                    return new CadastrarUsuarioView();
+                case "4":
+                    return new ListarUsuariosView();
+                case "5":
+                    return new EmprestarLivroView();
+                case "6":
+                    return new DevolverLivroView();
+                case "7":
+                    return new SairView();
                 default:
                     throw new Exception("Escolha inválida");
             }

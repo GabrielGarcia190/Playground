@@ -27,13 +27,18 @@ namespace ExemploCSharp
         }
         private static void GerarMenu()
         {
+            Console.WriteLine("================================================");
             Console.WriteLine("1 - Adicionar Livro");
             Console.WriteLine("2 - Listar Livros");
             Console.WriteLine("3 - Registrar Usuário");
-            Console.WriteLine("4 - Emprestar Livro");
-            Console.WriteLine("5 - Devolver Livro");
-            Console.WriteLine("6 - Sair");
+            Console.WriteLine("4 - Listar Usuários");
+            Console.WriteLine("5 - Emprestar Livro");
+            Console.WriteLine("6 - Devolver Livro");
+            Console.WriteLine("7 - Sair");
+            Console.WriteLine("================================================");
 
+            Console.WriteLine("Escolha uma opção:");
+            
             var opcaoEscolhida = Console.ReadLine();
 
             try

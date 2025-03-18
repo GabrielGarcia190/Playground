@@ -4,7 +4,6 @@ using ExemploCSharp.Repositories;
 using ExemploCSharp.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace ExemploCSharp.Ioc;
 public static class DependencyInjection
@@ -17,12 +16,14 @@ public static class DependencyInjection
 
         services.AddDbContext<ExemploDBContext>(options =>
          {
-             options.UseSqlite("Data Source=dev.db")
-                         .LogTo(Console.WriteLine, LogLevel.Information);
+             options.UseSqlite("Data Source=dev.db");
+                        //  .LogTo(Console.WriteLine, LogLevel.Information);
          });
 
         services.AddScoped<ILivroRepository, LivroRepository>();
+        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
+        services.AddScoped<UsuarioService>();
         services.AddScoped<LivroService>();
 
         _serviceProvider = services.BuildServiceProvider();
